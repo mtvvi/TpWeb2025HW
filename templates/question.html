@@ -1,0 +1,84 @@
+{% extends "components/base.html" %}
+{% load static %}
+
+{% block content %}
+<main class="container-fluid">
+  <div class="row">
+    <section class="col-1"></section>
+
+    <section class="col-8">
+      <!-- Вопрос -->
+      <article class="mt-5">
+        <div class="card mb-3 bg-body-tertiary">
+          <div class="card-body row align-items-center">
+            <div class="col-2">
+              <img src="{% static 'img/Cover.jpg' %}" alt="" class="img_avatar col-11 rounded">
+            </div>
+            <div class="col me-3">
+              <div class="row">
+                <h5 class="col card-title">{{ question.title }}</h5>
+                <input type="number" class="col-3 question_rating" value="{{ question.rating }}" style="width: 80px;">
+
+              </div>
+              <p class="card-text">{{ question.text }}</p>
+              <div class="col">
+                <span>Tags:</span>
+                {% for tag in question.tags %}
+                  <span class="badge rounded-pill text-bg-secondary">{{ tag }}</span>
+                {% endfor %}
+              </div>
+            </div>
+          </div>
+        </div>
+      </article>
+
+      <!-- Ответы -->
+      <div class="answers mb-5">
+        <h3 class="mb-4">{{ answers|length }} Answers</h3>
+
+        {% for answer in answers %}
+        <div class="card mb-3">
+          <div class="card-body row align-items-center">
+            <div class="col-2 text-center mx-3">
+              <img src="{% static 'img/Cover.jpg' %}" alt="" class="img_avatar col-11 rounded mx-auto">
+              <div class="mt-2">
+                <div class="d-flex flex-column align-items-center">
+                  <input type="number" class="question_rating text-center mb-2" value="{{ answer.rating }}" style="width: 50px;">
+                </div>
+                <div class="form-check mt-3">
+                  <input class="form-check-input" type="checkbox" id="correctAnswer{{ answer.id }}" {% if answer.correct %}checked{% endif %}>
+                  <label class="form-check-label" for="correctAnswer{{ answer.id }}">Correct</label>
+                </div>
+              </div>
+            </div>
+            <div class="col me-3">
+              <p class="card-text">{{ answer.text }}</p>
+            </div>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+
+      <!-- Форма отправки ответа -->
+      <div class="card mt-5">
+        <div class="card-header bg-light">
+          <h5 class="mb-0">Ваш ответ</h5>
+        </div>
+        <div class="card-body">
+          <form>
+            <div class="mb-3">
+              <textarea class="form-control" rows="5" placeholder="Напишите развернутый ответ..."></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary">Отправить ответ</button>
+          </form>
+        </div>
+      </div>
+    </section>
+
+    <!-- Sidebar -->
+    <aside class="col-3 bg-body-tertiary min-vh-100">
+      {% include 'components/aside.html' %}
+    </aside>
+  </div>
+</main>
+{% endblock %}

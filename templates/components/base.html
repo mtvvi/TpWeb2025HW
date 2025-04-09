@@ -1,0 +1,21 @@
+<!doctype html>
+{% load static %}
+
+<html lang="en">
+
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>TP Web</title>
+    <link href="{% static 'css/bootstrap.css' %} " rel="stylesheet">
+  </head>
+
+  <body class="d-flex flex-column min-vh-100">
+    {% include 'components/header.html' %}
+
+    {% block content %}{% endblock %}
+
+    {% include 'components/footer.html' %}
+    
+  </body>
+</html>

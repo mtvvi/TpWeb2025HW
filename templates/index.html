@@ -1,0 +1,64 @@
+<!doctype html>
+{% extends "components/base.html" %}
+{% load static %}
+
+
+    {% block content %}
+    <main class="container-fluid">
+        <div class="row">
+            <section class="col-1"></section>
+            <section class="col-8 ">
+                <div class="d-flex align-items-center gap-5 mb-3">
+                    <h1>New Questions</h1>
+                    <a href="#">Hot questions</a>
+                </div>
+
+                {% for question in questions %}
+                <article>
+                    <div class="card mb-3 bg-body-tertiary">
+                        <div class="card-body row align-items-center ">
+                            <div class="col-2">
+                                <img src="{% static 'img/Cover.jpg' %}" alt="" class="img_avatar col-11 rounded">
+                            </div>
+                            <div class="col me-3">
+                                <div class="row">
+                                    <h5 class="col  card-title">{{question.title}}</h5>
+                                    <input type="number" class="col-3 question_rating" value="{{question.rating}}" style="width: 80px; height: auto;">
+                                </div>
+                                
+                                <p class="card-text">{{question.text}}</p>
+                                <div class="row">
+                                    <div class="col">
+                                        <form action="{% url 'question' question.id %}">
+                                            <button class="btn btn-primary position-relative">Show answers
+                                                <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                                                    {{ question.answers }}
+                                                </span>                                                
+                                            </button>
+                                        </form>
+                                    </div>
+                                    <div class="col">
+                                        <span>Tags: </span>
+                                        {% for tag in question.tags %}
+                                        <span class="badge rounded-pill text-bg-secondary">{{ tag }}</span>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                                
+                            </div>
+                            
+                        </div>
+                      </div>
+                </article>
+                {% endfor %}
+
+
+
+                {% include 'components/pagination.html' %}
+            </section>
+
+            {% include 'components/aside.html' %}
+        </div>
+    </main>
+    {% endblock content %}
+   

@@ -1,0 +1,34 @@
+{% load static %}
+<header>
+    <nav class="navbar navbar-expand-lg bg-body-tertiary">
+        <div class="container-fluid d-flex">
+          
+          <div class="navbar" id="navbarSupportedContent">
+            <a class="navbar-brand fw-bold  me-auto" href="{% url 'index' %}">StackUnderflow
+                <img src="{% static 'img/logo.png' %}" alt="" style="height: 50px;">
+            </a>
+            
+
+            <form class="d-flex mx-auto col-6 " action="{% url 'ask' %}" role="search">
+              <input class="form-control me-2" type="search" placeholder="Поиск" aria-label="Поиск">
+              <button class="btn btn-outline-success" type="submit">ASK!!1</button>
+            </form>              
+
+            <div class="account d-flex align-items-center col-2 me-5">
+                <img src="{% static 'img/Cover.jpg' %}" class="rounded col-3" alt="...">
+                <div class="account_content ms-3">
+                    <div class="account_content_info">
+                        <div class="name fw-bold">
+                            Sr. Pupkin
+                        </div>
+                        <div class="d-flex">
+                            <a href="{% url 'settings' %}" class="small me-2">settings</a>
+                            <a href="{% url 'login' %}" class="small">log out</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+          </div>
+        </div>
+      </nav>
+</header>

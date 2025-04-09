@@ -1,0 +1,45 @@
+<!doctype html>
+{% extends "components/base.html" %}
+{% load static %}
+
+{% block content %}
+    <main class="container-fluid">
+        <div class="row">
+            <section class="col-1"></section>
+            <section class="col-8">
+                <h1 class="mb-4">New Question</h1>
+
+                <form>
+                    <div class="mb-3">
+                        <label for="question_title" class="form-label">Тема</label>
+                        <input type="text" class="form-control" id="question_title" placeholder="Тема">
+                        <div class="invalid-feedback">
+                            Не должно быть пустым
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="question_body" class="form-label">Вопрос</label>
+                        <textarea class="form-control" id="question_body" rows="10"
+                            placeholder="Вопрос"></textarea>
+                        <div class="invalid-feedback">
+                            Не должно быть пустым
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="question_tags" class="form-label">Тэги</label>
+                        <input type="text" class="form-control" id="question_tags" placeholder="Добавьте тэг(и)">
+                        <div class="invalid-feedback">
+                            Не должно быть пустым
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn btn-success">ASK!!1</button>
+                </form>
+            </section>
+
+            {% include 'components/aside.html' %}
+        </div>
+    </main>
+    {% endblock content %}
