@@ -7,7 +7,23 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>TP Web</title>
-    <link href="{% static 'css/bootstrap.css' %} " rel="stylesheet">
+    <link href="{% static 'css/bootstrap.css' %}" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css" rel="stylesheet">
+    <script>
+      //корявая функция для показа работы лайка/дизлайка
+      function vote(type, id, value) {
+        const ratingElement = event.target.closest('.d-flex').querySelector('.rating-value');
+        let currentRating = parseInt(ratingElement.textContent);
+        
+        //api
+        currentRating += value;
+        ratingElement.textContent = currentRating;
+        
+        // Логика для кнопок
+        const buttons = event.target.closest('.d-flex').querySelectorAll('button');
+        buttons.forEach(button => button.disabled = true);
+      }
+    </script>
   </head>
 
   <body class="d-flex flex-column min-vh-100">

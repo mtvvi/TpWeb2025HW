@@ -1,19 +1,17 @@
 <aside class="col-3 bg-body-tertiary min-vh-100">
     <section class="mb-5">
-        <h2 class="mx-auto">Popular Tags</h2>
-        <span class="badge rounded-pill text-bg-primary">Brainrot</span>
-        <span class="badge rounded-pill text-bg-secondary">Googlen't</span>
-        <span class="badge rounded-pill text-bg-success">Offtopic</span>
-        <span class="badge rounded-pill text-bg-danger">Danger</span>
-        <span class="badge rounded-pill text-bg-primary">Internet Owner</span>
-        <span class="badge rounded-pill text-bg-secondary">Certified hood classic</span>
+        <h2 class="mx-auto mb-3">Popular Tags</h2>
+        {% for tag in popular_tags %}
+            <a href="{% url 'tag' tag.name %}" class="text-decoration-none">
+                <span class="badge rounded-pill text-bg-warning mb-1">{{ tag.name }} ({{ tag.quest_count }})</span>
+            </a>
+        {% endfor %}
     </section>
     <section>
-        <h2 class="mx-auto">Best Members</h2>
-        <a class="d-block" href="#">Директор интернета</a>
-        <a class="d-block" href="#">Vasya Pupkin</a>
-        <a class="d-block" href="#">Pasya Vupkin</a>
-        <a class="d-block" href="#">PasysaP VuppuV</a>
+        <h2 class="mx-auto mb-3">New Members</h2>
+        {% for profile in new_users %}
+            <a class="d-block mb-2" href="#">{{ profile.user.username }}</a>
+        {% endfor %}
     </section>
 
 </aside>
