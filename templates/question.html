@@ -54,7 +54,7 @@
                   </div>
                 </div>
                 <div class="col-3 d-flex align-items-center gap-2 justify-content-end">
-                  {% include 'components/vote_buttons.html' with type='question' id=question.id rating=question.rating %}
+                  {% include 'components/vote_buttons.html' with type='question' id=question.id rating=answer.rating %}
                 </div>
               </div>
               <p class="card-text">{{ answer.text }}</p>
