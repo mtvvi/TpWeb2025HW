@@ -49,7 +49,7 @@
                                     <span>Tags: </span>
                                     {% for tag in question.get_tags %}
                                     <a href="{% url 'tag' tag %}" class="text-decoration-none">
-                                        <span class="badge rounded-pill text-bg-warning">{{ tag }}</span>
+                                        <span class="badge rounded-pill text-bg-success">{{ tag }}</span>
                                     </a>
                                     {% endfor %}
                                 </div>
