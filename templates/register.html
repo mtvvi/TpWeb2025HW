@@ -1,62 +1,41 @@
 {% extends "components/base_unlogged.html" %}
+{% load static %}
 
-    {% block content %}
-    <main class="container-fluid">
-        <div class="row">
-            <section class="col-4"></section>
-            <section class="col-4">
-                <h1 class="text-center mb-4">Register</h1>
-                
-                <form>
+{% block content %}
+<main class="container-fluid">
+    <div class="row">
+        <section class="col-4"></section>
+        <section class="col-4">
+            <h1 class="text-center mb-4">Register</h1>
+            
+            {% if form.errors %}
+            <div class="alert alert-danger">
+                {% for field, errors in form.errors.items %}
+                    {{ errors|join:", " }}
+                {% endfor %}
+            </div>
+            {% endif %}
+            
+            <form method="POST" enctype="multipart/form-data">
+                {% csrf_token %}
+                {% for field in form %}
+                    {% if field.name != 'avatar' %}
                     <div class="mb-3">
-                        <label for="login_login" class="form-label">Login</label>
-                        <input type="text" class="form-control" id="login_login" required>
-                        <div class="invalid-feedback">
-                            invalid login
-                        </div>
+                        {{ field.label_tag }}
+                        {{ field }}
                     </div>
-                    <div class="mb-3">
-                        <label for="register_username" class="form-label">Username</label>
-                        <input type="text" class="form-control" id="register_username" required>
-                        <div class="invalid-feedback">
-                            invalid Username
-                        </div>
-                    </div>
-                    
-                    <div class="mb-3">
-                        <label for="register_email" class="form-label">Email</label>
-                        <input type="email" class="form-control" id="register_email" required>
-                        <div class="invalid-feedback">
-                            invalid email
-                        </div>
-                    </div>
-                    
-                    <div class="mb-3">
-                        <label for="register_password" class="form-label">Password</label>
-                        <input type="password" class="form-control" id="register_password" required>
-                    </div>
-                    
-                    <div class="mb-3">
-                        <label for="register_confirm_password" class="form-label">Confirm Password</label>
-                        <input type="password" class="form-control" id="register_confirm_password" required>
-                        <div class="invalid-feedback">
-                            passwords invalid.
-                        </div>
-                    </div>
-                    
-                    <div class="mb-3">
-                        <label for="registerAvatar" class="form-label">Avatar</label>
-                        <input type="file" class="form-control" id="registerAvatar">
-                    </div>
-                    
-                    <div class="d-grid gap-2">
-                        <button type="submit" class="btn btn-primary">Register</button>
-                    </div>
-                    
-                </form>
-            </section>
-            <section class="col-4"></section>
-        </div>
-    </main>
-
-    {% endblock content %}
+                    {% endif %}
+                {% endfor %}
+                <div class="mb-3">
+                    {{ form.avatar.label_tag }}
+                    {{ form.avatar }}
+                </div>
+                <div class="d-grid gap-2">
+                    <button type="submit" class="btn btn-primary">Register</button>
+                </div>
+            </form>
+        </section>
+        <section class="col-4"></section>
+    </div>
+</main>
+{% endblock %}

@@ -1,45 +1,64 @@
-<!doctype html>
 {% extends "components/base.html" %}
 {% load static %}
 
 {% block content %}
-    <main class="container-fluid">
-        <div class="row">
-            <section class="col-1"></section>
-            <section class="col-8">
-                <h1 class="mb-4">New Question</h1>
+<main class="container-fluid">
+    <div class="row">
+        <section class="col-1"></section>
+        <section class="col-8">
+            <h1 class="mb-4">New Question</h1>
 
-                <form>
-                    <div class="mb-3">
-                        <label for="question_title" class="form-label">Тема</label>
-                        <input type="text" class="form-control" id="question_title" placeholder="Тема">
-                        <div class="invalid-feedback">
-                            Не должно быть пустым
-                        </div>
+            <form method="POST" action="{% url 'ask' %}">
+                {% csrf_token %}
+                
+                <!-- Вывод общих ошибок формы -->
+                {% if form.non_field_errors %}
+                <div class="alert alert-danger">
+                    {% for error in form.non_field_errors %}
+                        {{ error }}
+                    {% endfor %}
+                </div>
+                {% endif %}
+
+                <!-- Поле заголовка -->
+                <div class="mb-3">
+                    <label for="{{ form.title.id_for_label }}" class="form-label">Тема</label>
+                    {{ form.title }}
+                    {% if form.title.errors %}
+                    <div class="invalid-feedback d-block">
+                        {{ form.title.errors|join:", " }}
                     </div>
+                    {% endif %}
+                </div>
 
-                    <div class="mb-3">
-                        <label for="question_body" class="form-label">Вопрос</label>
-                        <textarea class="form-control" id="question_body" rows="10"
-                            placeholder="Вопрос"></textarea>
-                        <div class="invalid-feedback">
-                            Не должно быть пустым
-                        </div>
+                <!-- Поле текста вопроса -->
+                <div class="mb-3">
+                    <label for="{{ form.text.id_for_label }}" class="form-label">Вопрос</label>
+                    {{ form.text }}
+                    {% if form.text.errors %}
+                    <div class="invalid-feedback d-block">
+                        {{ form.text.errors|join:", " }}
                     </div>
+                    {% endif %}
+                </div>
 
-                    <div class="mb-3">
-                        <label for="question_tags" class="form-label">Тэги</label>
-                        <input type="text" class="form-control" id="question_tags" placeholder="Добавьте тэг(и)">
-                        <div class="invalid-feedback">
-                            Не должно быть пустым
-                        </div>
+                <!-- Поле тегов -->
+                <div class="mb-3">
+                    <label for="{{ form.tags.id_for_label }}" class="form-label">Тэги</label>
+                    {{ form.tags }}
+                    <small class="form-text text-muted">Введите теги через запятую</small>
+                    {% if form.tags.errors %}
+                    <div class="invalid-feedback d-block">
+                        {{ form.tags.errors|join:", " }}
                     </div>
+                    {% endif %}
+                </div>
 
-                    <button type="submit" class="btn btn-success">ASK!!1</button>
-                </form>
-            </section>
+                <button type="submit" class="btn btn-success">ASK!!1</button>
+            </form>
+        </section>
 
-            {% include 'components/aside.html' %}
-        </div>
-    </main>
-    {% endblock content %}
+        {% include 'components/aside.html' %}
+    </div>
+</main>
+{% endblock content %}

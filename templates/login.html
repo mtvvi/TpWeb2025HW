@@ -1,44 +1,42 @@
 {% extends "components/base_unlogged.html" %}
+{% load static %}
 
-    {% block content %}
-    <main class="container-fluid">
-        <div class="row">
-            <section class="col-4"></section>
-            <section class="col-4">
-                <h1 class="text-center mb-4">Log in</h1>
-                
-                <form>
-                    <div class="mb-3">
-                        <label for="login_login" class="form-label">Login</label>
-                        <input type="text" class="form-control" id="login_login" required>
-                        <div class="invalid-feedback">
-                            Enter login
-                        </div>
-                    </div>
-                    
-                    <div class="mb-3">
-                        <label for="login_password" class="form-label">Password</label>
-                        <input type="password" class="form-control" id="login_password" required>
-                        <div class="invalid-feedback">
-                            Enter password
-                        </div>
-                    </div>
-                    
-                    <div class="mb-3 form-check">
-                        <input type="checkbox" class="form-check-input" id="remember_me">
-                        <label class="form-check-label" for="rememberMe">Remember me</label>
-                    </div>
-                    
-                    <div class="d-grid gap-2">
-                        <button type="submit" class="btn btn-primary">Login</button>
-                    </div>
-                    
-                    <div class="text-center mt-3">
-                        <a href="{% url 'signup' %}">Register</a>
-                    </div>
-                </form>
-            </section>
-            <section class="col-4"></section>
-        </div>
-    </main>
-    {% endblock content %}
+{% block content %}
+<main class="container-fluid">
+    <div class="row">
+        <section class="col-4"></section>
+        <section class="col-4">
+            <h1 class="text-center mb-4">Log in</h1>
+            
+            {% if form.errors %}
+            <div class="alert alert-danger">
+                Invalid username or password
+            </div>
+            {% endif %}
+            
+            <form method="POST">
+                {% csrf_token %}
+                <div class="mb-3">
+                    {{ form.username.label_tag }}
+                    {{ form.username }}
+                </div>
+                <div class="mb-3">
+                    {{ form.password.label_tag }}
+                    {{ form.password }}
+                </div>
+                <div class="mb-3 form-check">
+                    {{ form.remember_me }}
+                    <label class="form-check-label">{{ form.remember_me.label }}</label>
+                </div>
+                <div class="d-grid gap-2">
+                    <button type="submit" class="btn btn-primary">Login</button>
+                </div>
+                <div class="text-center mt-3">
+                    <a href="{% url 'signup' %}">Create new account</a>
+                </div>
+            </form>
+        </section>
+        <section class="col-4"></section>
+    </div>
+</main>
+{% endblock %}

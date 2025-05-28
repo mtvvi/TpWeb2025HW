@@ -1,34 +1,38 @@
 {% load static %}
 <header>
     <nav class="navbar navbar-expand-lg bg-body-tertiary">
-        <div class="container-fluid d-flex">
-          
-          <div class="navbar" id="navbarSupportedContent">
-            <a class="navbar-brand fw-bold  me-auto" href="{% url 'index' %}">StackUnderflow
+        <div class="container-fluid">
+            <a class="navbar-brand fw-bold me-3" href="{% url 'index' %}">
+                StackUnderflow
                 <img src="{% static 'img/logo.png' %}" alt="" style="height: 50px;">
             </a>
             
+            <div class="d-flex flex-grow-1 align-items-center">
+                <form class="d-flex w-100 mx-3" action="{% url 'ask' %}" method="get">
+                    <input class="form-control me-2" type="search" placeholder="Поиск" aria-label="Поиск" name="q">
+                    <button class="btn btn-outline-success" type="submit">ASK!!1</button>
+                </form>
 
-            <form class="d-flex mx-auto col-6 " action="{% url 'ask' %}" role="search">
-              <input class="form-control me-2" type="search" placeholder="Поиск" aria-label="Поиск">
-              <button class="btn btn-outline-success" type="submit">ASK!!1</button>
-            </form>              
-
-            <div class="account d-flex align-items-center col-2 me-5">
-                <img src="{% static 'img/Cover.jpg' %}" class="rounded col-3" alt="...">
-                <div class="account_content ms-3">
-                    <div class="account_content_info">
-                        <div class="name fw-bold">
-                            Sr. Pupkin
-                        </div>
-                        <div class="d-flex">
-                            <a href="{% url 'settings' %}" class="small me-2">settings</a>
-                            <a href="{% url 'login' %}" class="small">log out</a>
-                        </div>
+                <div class="account ms-auto">
+                    <div class="user-panel">
+                        {% if user.is_authenticated %}
+                            <div class="d-flex align-items-center">
+                                <img src="{{ user.profile.avatar.url }}" class="avatar-small me-2" style="width: 40px; height: 40px; border-radius: 10%;">
+                                <a href="{% url 'settings' %}" class="me-3">{{ user.username }}</a>
+                                <form action="{% url 'logout' %}" method="post">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-link">Logout</button>
+                                </form>
+                            </div>
+                        {% else %}
+                            <div class="d-flex gap-3">
+                                <a href="{% url 'login' %}?next={{ request.path }}">Login</a>
+                                <a href="{% url 'signup' %}">Register</a>
+                            </div>
+                        {% endif %}
                     </div>
                 </div>
             </div>
-          </div>
         </div>
-      </nav>
+    </nav>
 </header>

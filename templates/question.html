@@ -71,18 +71,35 @@
       </div>
 
       <!-- Форма отправки ответа -->
-      <div class="card mt-5">
-        <div class="card-header bg-light">
-          <h5 class="mb-0">Ваш ответ</h5>
-        </div>
-        <div class="card-body">
-          <form>
-            <div class="mb-3">
-              <textarea class="form-control" rows="5" placeholder="Напишите развернутый ответ..."></textarea>
-            </div>
-            <button type="submit" class="btn btn-primary">Отправить ответ</button>
-          </form>
-        </div>
+      <div class="card mt-5" id="answer-form">
+          <div class="card-header bg-light">
+              <h5 class="mb-0">Ваш ответ</h5>
+          </div>
+          <div class="card-body">
+              <form method="POST" action="{% url 'question' question.id %}#answer-form">
+                  {% csrf_token %}
+                  
+                  <!-- Вывод ошибок -->
+                  {% if answer_form.errors %}
+                      <div class="alert alert-danger">
+                          {% for error in answer_form.text.errors %}
+                              {{ error|escape }}
+                          {% endfor %}
+                      </div>
+                  {% endif %}
+
+                  <div class="mb-3">
+                      <textarea 
+                          name="{{ answer_form.text.name }}"
+                          id="{{ answer_form.text.id_for_label }}"
+                          class="form-control {% if answer_form.text.errors %}is-invalid{% endif %}"
+                          rows="5"
+                          placeholder="Напишите развернутый ответ..."
+                      >{{ answer_form.text.value|default:'' }}</textarea>
+                  </div>
+                  <button type="submit" class="btn btn-primary">Отправить ответ</button>
+              </form>
+          </div>
       </div>
     </section>
 
