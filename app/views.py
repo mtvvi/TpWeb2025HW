@@ -28,12 +28,11 @@ def _handle_like_action(request, item_model, like_model, item_id_key_in_post='id
 
         val = int(val_str)
         item = get_object_or_404(item_model, pk=item_id)
-        
+
         if not hasattr(request.user, 'profile'):
             logger.error(f"AJAX {action_name_for_log}: User {request.user.username} has no profile.")
             return JsonResponse({'error': 'User profile not found.'}, status=500)
 
-        # Динамическое создание словаря для get_or_create
         lookup_params = {item_name_for_log: item}
 
         like, created = like_model.objects.get_or_create(
@@ -43,24 +42,21 @@ def _handle_like_action(request, item_model, like_model, item_id_key_in_post='id
         )
 
         if not created:
-            if like.value != val: # Если значение изменилось, обновляем
+            if like.value != val:
                 like.value = val
                 like.save()
                 logger.info(f"AJAX {action_name_for_log}: Vote changed for {item_name_for_log}_id='{item_id}' to {val} by user='{request.user.username}'")
-            # Если значение не изменилось, ничего не делаем и не логируем "pass"
         else:
             logger.info(f"AJAX {action_name_for_log}: Vote created for {item_name_for_log}_id='{item_id}' with value {val} by user='{request.user.username}'")
-            
-        # Используем related_name_on_item для доступа к related manager (item.likes)
+
         total_rating = getattr(item, related_name_on_item).aggregate(Sum('value'))['value__sum'] or 0
-        # Лог об успехе и новом рейтинге остается, он полезен
         logger.info(f"AJAX {action_name_for_log}: Success. {item_name_for_log}_id='{item_id}', new_rating='{total_rating}'")
         return JsonResponse({'rating': total_rating})
 
     except item_model.DoesNotExist:
         logger.warning(f"AJAX {action_name_for_log}: {item_model.__name__} not found. {item_id_key_in_post}='{item_id}'")
         return JsonResponse({'error': f'{item_model.__name__} not found.'}, status=404)
-    except Profile.DoesNotExist: 
+    except Profile.DoesNotExist:
         logger.error(f"AJAX {action_name_for_log}: Profile for user {request.user.username} not found during operation.")
         return JsonResponse({'error': 'User profile not found.'}, status=500)
     except IntegrityError as e:
@@ -89,11 +85,11 @@ def mark_correct(request):
     try:
         qid = request.POST.get('question')
         aid = request.POST.get('answer')
-        should_be_correct_str = request.POST.get('checked', 'false') 
+        should_be_correct_str = request.POST.get('checked', 'false')
         should_be_correct = should_be_correct_str.lower() == 'true'
 
         question = get_object_or_404(Question, pk=qid)
-        
+
         if not hasattr(request.user, 'profile'):
             logger.error(f"AJAX mark_correct: User {request.user.username} has no profile.")
             return JsonResponse({'error': 'User profile not found.'}, status=500)
@@ -101,12 +97,12 @@ def mark_correct(request):
         if request.user.profile != question.author:
             logger.warning(f"AJAX mark_correct: Forbidden. User '{request.user.username}' is not author of question qid='{qid}'.")
             return HttpResponseForbidden("You are not the author of this question.")
-        
+
         answer = get_object_or_404(Answer, pk=aid, question=question)
-        
+
         answer.is_correct = should_be_correct
         answer.save()
-        
+
         logger.info(f"AJAX mark_correct: Success. qid='{qid}', aid='{answer.id}' set to is_correct={answer.is_correct}.")
         return JsonResponse({'answer_id': answer.id, 'is_correct': answer.is_correct})
 
@@ -130,16 +126,16 @@ def custom_login(request):
                 login(request, user)
                 if not form.cleaned_data['remember_me']:
                     request.session.set_expiry(0)
-                next_url = request.GET.get('next', 'index')
+                next_url = reverse('index')
                 logger.info(f"User '{user.username}' logged in. Redirecting to '{next_url}'.")
                 return redirect(next_url)
-            except Exception as e: # Оставляем этот лог, он важен для диагностики проблем входа
+            except Exception as e:
                 logger.error(f"Login error for attempt with username '{form.cleaned_data.get('username')}'. Error: {str(e)}", exc_info=True)
                 form.add_error(None, f"Ошибка входа: {str(e)}")
     else:
         form = LoginForm()
     return render(request, 'login.html', {'form': form})
-    
+
 
 def custom_signup(request):
     if request.method == 'POST':
@@ -147,13 +143,12 @@ def custom_signup(request):
         if form.is_valid():
             try:
                 user = form.save()
-                
-                if form.cleaned_data.get('avatar'): 
+
+                if form.cleaned_data.get('avatar'):
                     try:
                         if hasattr(user, 'profile'):
                             user.profile.avatar = form.cleaned_data['avatar']
                             user.profile.save()
-                            
                             logger.info(f"Avatar uploaded for new user '{user.username}'.")
                         else:
                             logger.error(f"Profile not found for new user '{user.username}' during avatar upload.")
@@ -165,11 +160,11 @@ def custom_signup(request):
                         form.add_error('avatar', f"Ошибка загрузки аватара: {str(e)}")
                         user.delete()
                         return render(request, 'register.html', {'form': form})
-                
+
                 login(request, user)
                 logger.info(f"User '{user.username}' signed up and logged in.")
                 return redirect('index')
-            except Exception as e: 
+            except Exception as e:
                 logger.error(f"Signup error. Data: {form.cleaned_data}. Error: {str(e)}", exc_info=True)
                 form.add_error(None, f"Ошибка регистрации: {str(e)}")
     else:
@@ -179,7 +174,7 @@ def custom_signup(request):
 
 @login_required
 def custom_logout(request):
-    username = request.user.username 
+    username = request.user.username
     logout(request)
     logger.info(f"User '{username}' logged out.")
     return redirect(request.META.get('HTTP_REFERER', 'index'))
@@ -189,12 +184,12 @@ def custom_logout(request):
 def edit_profile(request):
     if not hasattr(request.user, 'profile'):
         logger.error(f"Profile edit attempt by user '{request.user.username}' who has no profile.")
-        return redirect('index') 
+        return redirect('index')
 
     if request.method == 'POST':
         form = ProfileEditForm(
-            request.POST, 
-            request.FILES, 
+            request.POST,
+            request.FILES,
             instance=request.user.profile
         )
         if form.is_valid():
@@ -207,11 +202,10 @@ def edit_profile(request):
                 form.add_error(None, "Произошла ошибка при сохранении профиля.")
     else:
         form = ProfileEditForm(instance=request.user.profile)
-    
-    # Используем распаковку для добавления базового контекста
+
     context = {
         'form': form,
-        **get_base_context() 
+        **get_base_context()
     }
     return render(request, 'settings.html', context)
 
@@ -223,21 +217,21 @@ def ask_question(request):
         if form.is_valid():
             try:
                 question = form.save(commit=False)
-                
+
                 if not hasattr(request.user, 'profile'):
                      logger.error(f"Ask question attempt by user '{request.user.username}' who has no profile.")
                      form.add_error(None, "Не удалось создать вопрос: профиль пользователя не найден.")
                 else:
                     question.author = request.user.profile
-                    question.save() 
-                    
+                    question.save()
+
                     tags_string = form.cleaned_data.get('tags', '')
                     if tags_string:
                         tag_names = [t.strip() for t in tags_string.split(',') if t.strip()]
                         for tag_name in tag_names:
                             tag, _ = Tag.objects.get_or_create(name=tag_name)
                             question.tags.add(tag)
-                    
+
                     logger.info(f"New question (id={question.id}) asked by '{request.user.username}'. Title: '{question.title}'.")
                     return redirect('question', question_id=question.id)
             except Exception as e:
@@ -245,7 +239,7 @@ def ask_question(request):
                 form.add_error(None, f"Ошибка создания вопроса: {str(e)}")
     else:
         form = QuestionForm()
-    
+
     context = {
         'form': form,
         **get_base_context()
@@ -253,17 +247,17 @@ def ask_question(request):
     return render(request, 'ask.html', context)
 
 
-def question_detail(request, question_id): 
+def question_detail(request, question_id):
     question = get_object_or_404(Question, pk=question_id)
     answers_qs = Answer.objects.filter(question=question).select_related('author', 'author__user').order_by('-created_at')
-    
+
     answer_form = AnswerForm()
 
     if request.method == 'POST':
         if not request.user.is_authenticated:
             logger.info(f"Unauthenticated user tried to post answer to question_id='{question_id}'. Redirecting to login.")
             return redirect(f"{reverse('login')}?next={request.get_full_path()}")
-            
+
         answer_form = AnswerForm(request.POST)
         if answer_form.is_valid():
             if not hasattr(request.user, 'profile'):
@@ -275,15 +269,16 @@ def question_detail(request, question_id):
                 answer.author = request.user.profile
                 answer.save()
                 logger.info(f"New answer (id={answer.id}) posted by '{request.user.username}' to question_id='{question_id}'.")
-                return redirect(f"{reverse('question', args=[question.id])}#answer-{answer.id}")
+                return redirect(f"{reverse('question', args=[question.id])}?page=1#answer-{answer.id}")
         else:
             logger.warning(f"Invalid answer form for question_id='{question_id}'. Errors: {answer_form.errors.as_json()}")
 
-    answers_page = paginate(answers_qs, request, 5)
-    
+    answers_page = paginate(answers_qs, request, 5) # 5 ответов на страницу, как было в "рабочем" варианте question()
+
     context = {
         'question': question,
-        'answers': answers_page, 
+        'answers': answers_page,      # Объект Page для итерации
+        'page_obj': answers_page,     # Объект Page для элементов пагинации (если шаблон его использует)
         'answer_form': answer_form,
         **get_base_context()
     }
@@ -292,15 +287,15 @@ def question_detail(request, question_id):
 
 def paginate(objects_list, request, per_page=10):
     paginator = Paginator(objects_list, per_page)
-    page_number = request.GET.get('page', 1)
-    
+    page_number = request.GET.get('page', 1) # По умолчанию первая страница
+
     try:
         page = paginator.page(page_number)
     except PageNotAnInteger:
         page = paginator.page(1)
     except EmptyPage:
         page = paginator.page(paginator.num_pages)
-    
+
     return page
 
 
@@ -315,9 +310,10 @@ def get_base_context():
 
 def index(request):
     questions_qs = Question.objects.new().select_related('author', 'author__user').prefetch_related('tags')
-    page_obj = paginate(questions_qs, request, 10) 
+    page_obj = paginate(questions_qs, request, 10)
     context = {
         'questions': page_obj, 
+        'page_obj': page_obj, 
         'section': 'new',
         **get_base_context()
     }
@@ -328,7 +324,8 @@ def hot(request):
     questions_qs = Question.objects.hot().select_related('author', 'author__user').prefetch_related('tags')
     page_obj = paginate(questions_qs, request, 10)
     context = {
-        'questions': page_obj,
+        'questions': page_obj,  
+        'page_obj': page_obj,  
         'section': 'hot',
         **get_base_context()
     }
@@ -336,12 +333,13 @@ def hot(request):
 
 
 def tag(request, tag_name):
-    tag_obj = get_object_or_404(Tag, name=tag_name) 
+    tag_obj = get_object_or_404(Tag, name=tag_name)
     questions_qs = Question.objects.by_tag(tag_name).select_related('author', 'author__user').prefetch_related('tags')
     page_obj = paginate(questions_qs, request, 5)
     context = {
-        'questions': page_obj,
-        'tag': tag_name, 
+        'questions': page_obj,  
+        'page_obj': page_obj, 
+        'tag': tag_name,
         'section': 'tag',
         **get_base_context()
     }
