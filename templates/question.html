@@ -48,22 +48,32 @@
             <div class="col me-3">
               <div class="row align-items-center mb-2">
                 <div class="col d-flex align-items-center gap-2">
-                  <div class="form-check mb-0">
-                    <input class="form-check-input" type="checkbox" id="correctAnswer{{ answer.id }}" {% if answer.is_correct %}checked{% endif %}>
-                    <label class="form-check-label" for="correctAnswer{{ answer.id }}">Correct</label>
-                  </div>
+                  {% if user.is_authenticated and question.author == user.profile %}
+              <!-- Чекбокс для автора вопроса -->
+              <div class="form-check mb-0">
+                <input type="checkbox" class="mark-correct" 
+                       data-question="{{ question.id }}" 
+                       data-answer="{{ answer.id }}" 
+                       {% if answer.is_correct %}checked{% endif %} 
+                       id="correctAnswer{{ answer.id }}">
+                <label class="form-check-label" for="correctAnswer{{ answer.id }}">Correct</label>
+              </div>
+            {% elif answer.is_correct %}
+              <!-- Индикатор для других пользователей, если ответ правильный -->
+              <span class="badge bg-success"><i class="bi bi-check-circle-fill"></i> Correct Answer</span>
+            {% endif %}
                 </div>
                 <div class="col-3 d-flex align-items-center gap-2 justify-content-end">
-                  {% include 'components/vote_buttons.html' with type='question' id=question.id rating=answer.rating %}
+                  {% include 'components/vote_buttons.html' with type='answer' id=answer.id rating=answer.rating %}
                 </div>
               </div>
               <p class="card-text">{{ answer.text }}</p>
             </div>
           </div>
-        </div>
+        </div> 
         {% endfor %}
 
-        {% if page_obj.paginator.num_pages > 1 %}
+        {% if answers.paginator.num_pages > 1 %}
           <div class="mt-4">
             {% include 'components/pagination.html' %}
           </div>
@@ -78,8 +88,6 @@
           <div class="card-body">
               <form method="POST" action="{% url 'question' question.id %}#answer-form">
                   {% csrf_token %}
-                  
-                  <!-- Вывод ошибок -->
                   {% if answer_form.errors %}
                       <div class="alert alert-danger">
                           {% for error in answer_form.text.errors %}

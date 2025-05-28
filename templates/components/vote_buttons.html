@@ -1,10 +1,17 @@
-
+<!-- vote_buttons.html -->
 <div class="d-flex align-items-center gap-2 justify-content-end">
-  <button class="btn btn-outline-success btn-sm" onclick="vote('{{ type }}',  id, 1)">
-    <i class="bi bi-hand-thumbs-up"></i>
-  </button>
-  <span class="rating-value">{{ rating }}</span>
-  <button class="btn btn-outline-danger btn-sm" onclick="vote('{{ type }}',  id, -1)">
-    <i class="bi bi-hand-thumbs-down"></i>
-  </button>
+  {% if user.is_authenticated %}
+    <button class="btn-like btn btn-outline-success btn-sm"
+            data-type="{{ type }}" data-id="{{ id }}" data-value="1">
+      <i class="bi bi-hand-thumbs-up"></i>
+    </button>
+    <span class="rating-value">{{ rating }}</span>
+    <button class="btn-like btn btn-outline-danger btn-sm"
+            data-type="{{ type }}" data-id="{{ id }}" data-value="-1">
+      <i class="bi bi-hand-thumbs-down"></i>
+    </button>
+  {% else %}
+
+    <span class="rating-value">{{ rating }}</span>
+  {% endif %}
 </div>
